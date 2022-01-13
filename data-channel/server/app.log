@@ -1,0 +1,18 @@
+15:54:12 DEBUG - the user number of room (111111) is: 0
+15:54:40 DEBUG - the user number of room is: 0
+15:54:44 DEBUG - the user number of room (111111) is: 0
+15:59:43 DEBUG - the user number of room (111111) is: 0
+15:59:56 DEBUG - the user number of room (111111) is: 0
+16:00:02 DEBUG - the user number of room (111111) is: 0
+16:03:57 DEBUG - the user number of room (111111) is: 1
+16:04:09 DEBUG - the user number of room (111111) is: 2
+16:04:09 DEBUG - message, room: 111111, data, type:offer
+16:04:09 DEBUG - message, room: 111111, data, type:candidate
+16:04:09 DEBUG - message, room: 111111, data, type:answer
+16:04:09 DEBUG - message, room: 111111, data, type:candidate
+16:12:34 DEBUG - the user number of room (54188) is: 1
+16:12:43 DEBUG - the user number of room (54188) is: 2
+16:12:43 DEBUG - message, room: 54188, data, type:offer
+16:12:43 DEBUG - message, room: 54188, data, type:candidate
+16:12:43 DEBUG - message, room: 54188, data, type:answer
+16:12:43 DEBUG - message, room: 54188, data, type:candidate
