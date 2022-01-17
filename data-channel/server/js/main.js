@@ -20,6 +20,7 @@ var pcConfig = {
 
 var pc = null;
 var dc = null;
+var dcFile = null;
 
 var roomid;
 var socket = null;
@@ -31,6 +32,7 @@ var sentFile = {};
 var receivedFile = {};
 var downloadAnchor = document.querySelector('a#download');
 var fileInput = document.querySelector('input#select-file');
+var fileReader = null;
 
 function sendMessage(roomid, data){
 
@@ -63,8 +65,8 @@ function receiveFile(event) {
         fileBuffer = [];
         receiveSize = 0;
         downloadAnchor.href = URL.createObjectURL(received);
-        downloadAnchor.download = fileName;
-        downloadAnchor.textContent = `Click to download ${fileName}: (${fileSize} bytes)`;
+        downloadAnchor.download = receivedFile.name;
+        downloadAnchor.textContent = `Click to download ${receivedFile.name}: (${receivedFile.size} bytes)`;
         downloadAnchor.style.display = 'block';
     }
 }
@@ -88,7 +90,7 @@ function sendFileData(){
     //创建fileReader来读取文件
     fileReader = new FileReader();
     fileReader.onload = e => { //当数据被加载时触发该事件
-        dc.send(e.target.result); //发送数据
+        dcFile.send(e.target.result); //发送数据
         offset += e.target.result.byteLength; //更改已读数据的偏移量
         if (offset < file.size) { //如果文件没有被读完
             readSlice(offset); // 读取数据
@@ -104,13 +106,28 @@ function sendFileData(){
 }
 
 function dataChannelStateChange(){
-	var readyState = dc.readyState;
-	if(readyState === 'open'){
+	var msgReadyState, fileReadyState;
+	if (dc) {
+		msgReadyState = dc.readyState;
+	}
+	if (dcFile) {
+		fileReadyState = dcFile.readyState;
+	}
+
+	if(msgReadyState === 'open'){
 		send_txt.disabled = false;
 		send.disabled = false;
 	}else{
 		send_txt.disabled = true;
 		send.disabled =true;
+	}
+
+	if(fileReadyState === 'open'){
+		fileInput.disabled = false;
+		btnSendFile.disabled = false;
+	}else{
+		fileInput.disabled = true;
+		btnSendFile.disabled =true;
 	}
 }
 
@@ -155,6 +172,11 @@ function conn(){
 		dc.onmessage = receivemsg;
 		dc.onopen = dataChannelStateChange;
 		dc.onclose = dataChannelStateChange;
+
+		dcFile = pc.createDataChannel('file', options);
+		dcFile.onmessage = receiveFile;
+		dcFile.onopen = dataChannelStateChange;
+		dcFile.onclose = dataChannelStateChange;
 
 		state = 'joined_conn';
 		call();
@@ -358,12 +380,18 @@ function createPeerConnection(){
 
 		//
 		pc.ondatachannel = e => {
-			if(!dc){
+			if(!dc && e.channel.label == "chat"){
 				dc = e.channel;	
 				dc.onmessage = receivemsg;
 				dc.onopen = dataChannelStateChange;
 				dc.opclose = dataChannelStateChange;
-			}	
+			}
+			if(!dcFile && e.channel.label == "file"){
+				dcFile = e.channel;	
+				dcFile.onmessage = receiveFile;
+				dcFile.onopen = dataChannelStateChange;
+				dcFile.opclose = dataChannelStateChange;
+			}
 		}	
 
 	}else {
@@ -429,3 +457,4 @@ btnConn.onclick = connSignalServer
 btnLeave.onclick = leave;
 
 btnSend.onclick = sendText;
+btnSendFile.onclick = sendFileData;

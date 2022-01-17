@@ -100,7 +100,7 @@ io.sockets.on('connection', (socket)=> {
             // lastModifyTime = data.lastModify;
 
             // Send the info to receiver.
-            socket.to(room).emit('message',room, data);
+            socket.to(roomid).emit('message',roomid, data);
         }
     });
 
